@@ -565,7 +565,7 @@
     async function fetchBookings() {
       const syncEl = document.getElementById("syncStatus");
       try {
-        const res = await fetch(CLOUD_API_URL, { headers: { "Accept": "application/json" } });
+        const res = await fetch(CLOUD_API_URL + "?t=" + Date.now(), { cache: "no-store", headers: { "Accept": "application/json" } });
         if (res.ok) {
           const data = await res.json();
           const listData = Array.isArray(data) ? data : (data && Array.isArray(data.bookings) ? data.bookings : (data ? Object.values(data) : []));
@@ -748,11 +748,16 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const scale = Math.min(1, 480 / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
+          const maxDim = 420;
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
           canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-          currentFaultPhotoBase64 = canvas.toDataURL("image/jpeg", 0.65);
+          let dataUrl = canvas.toDataURL("image/jpeg", 0.55);
+          if (dataUrl.length > 260000) {
+            dataUrl = canvas.toDataURL("image/jpeg", 0.35);
+          }
+          currentFaultPhotoBase64 = dataUrl;
 
           document.getElementById("photoPreviewImg").src = currentFaultPhotoBase64;
           document.getElementById("photoPreviewWrap").classList.remove("hidden");
@@ -816,7 +821,7 @@
       const clientName = document.getElementById("clientName").value.trim();
       const clientPhone = document.getElementById("clientPhone").value.trim();
       const vehicleModel = document.getElementById("vehicleModel").value.trim();
-      const vehiclePlate = document.getElementById("vehiclePlate").value.trim().toUpperCase();
+      const vehiclePlate = document.getElementById("vehiclePlate").value.trim().toUpperCase().replace(/\s+/g, "-");
       const notes = document.getElementById("problemNotes").value.trim();
 
       if (selectedServices.size === 0) return showFormError("Selecciona al menos un servicio eléctrico.");
@@ -990,7 +995,7 @@
     }
 
     async function searchVehicleStatus() {
-      const query = document.getElementById("trackQueryInput").value.trim().toUpperCase();
+      const query = document.getElementById("trackQueryInput").value.trim().toUpperCase().replace(/\s+/g, "-");
       const container = document.getElementById("trackResultContainer");
       if (!query) return;
 

@@ -69,6 +69,7 @@
         <button onclick="refreshData()" class="px-3 py-1.5 rounded-lg bg-dark-800 border border-gray-700 text-xs text-cyan-400 flex items-center gap-1">
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualizar
         </button>
+        <span id="cloudBadge" class="text-[11px] font-mono text-emerald-400">En línea</span>
         <span id="totalBadge" class="text-xs font-mono text-gray-400">0 citas</span>
       </div>
     </div>
@@ -139,31 +140,53 @@
     document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
 
     async function fetchBookings() {
+      const badge = document.getElementById("cloudBadge");
       try {
-        const res = await fetch(CLOUD_API_URL, { headers: { "Accept": "application/json" } });
+        const res = await fetch(CLOUD_API_URL + "?t=" + Date.now(), { cache: "no-store", headers: { "Accept": "application/json" } });
         if (res.ok) {
           const data = await res.json();
           const listData = Array.isArray(data) ? data : (data && Array.isArray(data.bookings) ? data.bookings : (data ? Object.values(data) : []));
-          if (data !== null) {
-            allBookings = listData;
-            localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
-            return;
+          allBookings = data === null ? [] : listData;
+          localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
+          if (badge) {
+            const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            badge.className = "text-[11px] font-mono text-emerald-400";
+            badge.textContent = "Sinc. " + now;
           }
+          return true;
         }
       } catch (e) {}
       allBookings = JSON.parse(localStorage.getItem(LOCAL_DB_KEY) || "[]");
+      if (badge) {
+        badge.className = "text-[11px] font-mono text-amber-400";
+        badge.textContent = "Modo local";
+      }
+      return false;
     }
 
     async function saveBookings(updated) {
       allBookings = updated;
       localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
+      const badge = document.getElementById("cloudBadge");
       try {
-        await fetch(CLOUD_API_URL, {
+        const res = await fetch(CLOUD_API_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify(allBookings)
         });
-      } catch (e) {}
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        if (badge) {
+          const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          badge.className = "text-[11px] font-mono text-emerald-400";
+          badge.textContent = "Guardado " + now;
+        }
+      } catch (e) {
+        if (badge) {
+          badge.className = "text-[11px] font-mono text-red-400";
+          badge.textContent = "Error al sincronizar";
+        }
+        alert("No se pudo guardar en la nube. Revisa tu conexión e intenta de nuevo.");
+      }
     }
 
     async function unlockPanel() {
@@ -231,7 +254,7 @@
           ${b.photo ? `
             <div>
               <span class="text-gray-500 block mb-1">Foto adjunta del cliente (toca para ampliar):</span>
-              <img src="${b.photo}" class="w-24 h-24 object-cover rounded-xl border border-gray-700 cursor-pointer" onclick="window.open(this.src)">
+              <div class="flex items-end gap-2"><img src="${b.photo}" class="w-24 h-24 object-cover rounded-xl border border-gray-700 cursor-pointer" onclick="window.open(this.src)"><button onclick="updateField('${b.id}', 'photo', '')" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-red-500/20 text-gray-300 hover:text-red-300 border border-gray-700 text-[11px]">Quitar foto</button></div>
             </div>
           ` : ''}
 
@@ -263,13 +286,16 @@
     }
 
     async function updateField(id, field, val) {
+      await fetchBookings();
       await saveBookings(allBookings.map(b => b.id === id ? { ...b, [field]: val } : b));
+      if (field === "photo") renderBookings();
     }
 
     function sendReceiptWA(id) {
       const b = allBookings.find(item => item.id === id);
       if (!b) return;
-      const clean = b.clientPhone.replace(/\D/g, "");
+      const clean = (b.clientPhone || "").replace(/\D/g, "");
+      if (clean.length < 7) { alert("El cliente no tiene un número de WhatsApp válido."); return; }
       const phone = clean.startsWith("591") ? clean : `591${clean}`;
       const st = REPAIR_STATUSES.find(s => s.id === (b.status || "espera")) || REPAIR_STATUSES[0];
 
@@ -305,6 +331,7 @@
 
     async function deleteBooking(id) {
       if (!confirm("¿Liberar este horario?")) return;
+      await fetchBookings();
       await saveBookings(allBookings.filter(b => b.id !== id));
       renderBookings();
     }
