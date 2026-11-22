@@ -437,7 +437,7 @@
 
   <script>
     const MAURI_PHONE = "59164628228";
-    const CLOUD_API_URL = "https://jsonblob.com/api/jsonBlob/0193307c-8e4a-7f8a-9c2d-84a91f0b2e11";
+    const CLOUD_API_URL = "https://taller-electrico-83bcd-default-rtdb.firebaseio.com/bookings.json";
     const LOCAL_DB_KEY = "mauri_workshop_bookings_v2";
     const MY_TICKETS_KEY = "mauri_my_tickets_v2";
 
@@ -568,8 +568,9 @@
         const res = await fetch(CLOUD_API_URL, { headers: { "Accept": "application/json" } });
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data.bookings)) {
-            allBookings = data.bookings;
+          const listData = Array.isArray(data) ? data : (data && Array.isArray(data.bookings) ? data.bookings : (data ? Object.values(data) : []));
+          if (data !== null) {
+            allBookings = listData;
             localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
             syncEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Sincronizado en vivo`;
             return;
@@ -587,7 +588,7 @@
         await fetch(CLOUD_API_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ bookings: allBookings, updatedAt: new Date().toISOString() })
+          body: JSON.stringify(allBookings)
         });
       } catch (e) {}
     }
