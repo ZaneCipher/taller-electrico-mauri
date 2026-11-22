@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Control — Taller Eléctrico Mauri</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: { dark: { 950: '#070a10', 900: '#0b0f19', 800: '#111827' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dark-950 text-gray-100 min-h-screen flex flex-col antialiased">
+
+  <!-- Top Bar -->
+  <header class="border-b border-gray-800 bg-dark-900/95 sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-yellow-400 text-gray-950 flex items-center justify-center font-bold">
+          <i data-lucide="wrench" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-sm sm:text-base text-white">PANEL INTERNO — TALLER MAURI</h1>
+          <p class="text-[11px] text-gray-400">Gestión de citas, estados e historial por placa</p>
+        </div>
+      </div>
+      <a href="./index.html" class="px-3 py-1.5 rounded-xl bg-dark-800 hover:bg-gray-800 border border-gray-700 text-xs text-gray-300 flex items-center gap-1.5">
+        <i data-lucide="external-link" class="w-3.5 h-3.5 text-yellow-400"></i> Vista Cliente
+      </a>
+    </div>
+  </header>
+
+  <!-- PIN Screen -->
+  <main id="pinScreen" class="flex-1 flex items-center justify-center p-4">
+    <div class="max-w-sm w-full bg-dark-900 border border-gray-800 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-2xl bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 flex items-center justify-center mx-auto">
+        <i data-lucide="key-round" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h2 class="font-bold text-white text-lg">Acceso del Taller</h2>
+        <p class="text-xs text-gray-400 mt-1">Ingresa tu PIN de seguridad (PIN inicial: <span class="font-mono text-yellow-400">1234</span>)</p>
+      </div>
+      <div class="flex gap-2">
+        <input type="password" id="pinInput" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter') unlockPanel()"
+          class="flex-1 bg-dark-950 border border-gray-700 rounded-xl px-4 py-2.5 text-center font-mono text-xl tracking-widest text-white focus:outline-none focus:border-yellow-400">
+        <button onclick="unlockPanel()" class="px-5 py-2.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-gray-950 font-extrabold text-sm">Entrar</button>
+      </div>
+      <p id="pinError" class="hidden text-xs text-red-400">PIN incorrecto.</p>
+    </div>
+  </main>
+
+  <!-- Dashboard -->
+  <main id="dashboard" class="hidden flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800 pb-3">
+      <div class="flex gap-2 flex-wrap">
+        <button id="tab-agenda" onclick="switchTab('agenda')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-yellow-400 text-gray-950">Agenda & Estados</button>
+        <button id="tab-history" onclick="switchTab('history')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700">Historial por Placa</button>
+        <button id="tab-settings" onclick="switchTab('settings')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700">Cambiar PIN</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="refreshData()" class="px-3 py-1.5 rounded-lg bg-dark-800 border border-gray-700 text-xs text-cyan-400 flex items-center gap-1">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualizar
+        </button>
+        <span id="totalBadge" class="text-xs font-mono text-gray-400">0 citas</span>
+      </div>
+    </div>
+
+    <!-- TAB 1: AGENDA -->
+    <section id="pane-agenda" class="space-y-4">
+      <div class="bg-dark-900 border border-gray-800 rounded-2xl p-4 flex flex-wrap items-end gap-3">
+        <div>
+          <label class="block text-[11px] text-gray-400 mb-1">Filtrar fecha</label>
+          <input type="date" id="dateFilter" onchange="renderBookings()" class="bg-dark-950 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-[11px] text-gray-400 mb-1">Bloquear horario manual</label>
+          <select id="manualSlot" class="bg-dark-950 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+            <option value="08:00">08:00 AM</option>
+            <option value="09:30">09:30 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="14:00">02:00 PM</option>
+            <option value="15:30">03:30 PM</option>
+            <option value="17:00">05:00 PM</option>
+          </select>
+        </div>
+        <button onclick="manualBlock()" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold">
+          + Bloquear Turno
+        </button>
+        <button onclick="document.getElementById('dateFilter').value=''; renderBookings();" class="px-3 py-2 rounded-xl bg-dark-800 text-gray-400 hover:text-white text-xs">
+          Ver Todas
+        </button>
+      </div>
+
+      <div id="bookingsList" class="space-y-3"></div>
+    </section>
+
+    <!-- TAB 2: HISTORIAL -->
+    <section id="pane-history" class="hidden space-y-4">
+      <input type="text" id="plateSearch" placeholder="Escribe la placa para ver historial (ej. 4582-XYZ)..." oninput="renderHistory()"
+        class="w-full bg-dark-900 border border-gray-700 rounded-xl px-4 py-3 text-sm font-mono uppercase text-white focus:outline-none focus:border-yellow-400">
+      <div id="historyResults" class="space-y-3"></div>
+    </section>
+
+    <!-- TAB 3: SETTINGS -->
+    <section id="pane-settings" class="hidden">
+      <div class="bg-dark-900 border border-gray-800 rounded-2xl p-5 max-w-md space-y-4">
+        <h3 class="font-bold text-white text-sm">Cambiar PIN de acceso</h3>
+        <input type="text" id="newPinInput" maxlength="6" placeholder="Nuevo PIN (4 a 6 dígitos)"
+          class="w-full bg-dark-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white">
+        <button onclick="saveNewPin()" class="px-4 py-2.5 rounded-xl bg-yellow-400 text-gray-950 font-bold text-xs">Guardar Nuevo PIN</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CLOUD_API_URL = "https://jsonblob.com/api/jsonBlob/0193307c-8e4a-7f8a-9c2d-84a91f0b2e11";
+    const LOCAL_DB_KEY = "mauri_workshop_bookings_v2";
+    const PIN_KEY = "mauri_panel_pin_v2";
+
+    const REPAIR_STATUSES = [
+      { id: "espera", label: "Agendado / En espera" },
+      { id: "diagnostico", label: "En diagnóstico / Escáner" },
+      { id: "repuesto", label: "Esperando repuesto" },
+      { id: "reparacion", label: "En reparación activa" },
+      { id: "listo", label: "¡Listo para recoger!" }
+    ];
+
+    let allBookings = [];
+    let currentPin = localStorage.getItem(PIN_KEY) || "1234";
+
+    document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+
+    async function fetchBookings() {
+      try {
+        const res = await fetch(CLOUD_API_URL, { headers: { "Accept": "application/json" } });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.bookings)) {
+            allBookings = data.bookings;
+            localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
+            return;
+          }
+        }
+      } catch (e) {}
+      allBookings = JSON.parse(localStorage.getItem(LOCAL_DB_KEY) || "[]");
+    }
+
+    async function saveBookings(updated) {
+      allBookings = updated;
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(allBookings));
+      try {
+        await fetch(CLOUD_API_URL, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ bookings: allBookings, updatedAt: new Date().toISOString() })
+        });
+      } catch (e) {}
+    }
+
+    async function unlockPanel() {
+      if (document.getElementById("pinInput").value === currentPin) {
+        document.getElementById("pinScreen").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        await refreshData();
+      } else {
+        document.getElementById("pinError").classList.remove("hidden");
+      }
+    }
+
+    async function refreshData() {
+      await fetchBookings();
+      renderBookings();
+    }
+
+    function switchTab(t) {
+      ["agenda", "history", "settings"].forEach(name => {
+        document.getElementById(`pane-${name}`).classList.toggle("hidden", name !== t);
+        document.getElementById(`tab-${name}`).className = name === t
+          ? "px-3.5 py-2 rounded-xl text-xs font-bold bg-yellow-400 text-gray-950"
+          : "px-3.5 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700";
+      });
+      if (t === "history") renderHistory();
+    }
+
+    function renderBookings() {
+      const fDate = document.getElementById("dateFilter").value;
+      const list = document.getElementById("bookingsList");
+      const filtered = fDate ? allBookings.filter(b => b.date === fDate) : allBookings;
+      document.getElementById("totalBadge").textContent = `${filtered.length} citas`;
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="text-center py-10 text-xs text-gray-500 bg-dark-900 rounded-2xl border border-gray-800">No hay reservas registradas.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(b => `
+        <div class="bg-dark-900 border border-gray-800 rounded-2xl p-4 text-xs space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="font-mono font-bold text-yellow-400 text-sm">${b.date} • ${b.slot}</span>
+              <span class="ml-2 px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-mono">${b.id}</span>
+              ${b.plate ? `<span class="ml-1.5 px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono">${b.plate}</span>` : ''}
+            </div>
+            <div class="flex items-center gap-2">
+              ${!b.manualBlock ? `
+                <button onclick="sendReceiptWA('${b.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 font-bold">
+                  Enviar Recibo WA
+                </button>
+              ` : ''}
+              <button onclick="deleteBooking('${b.id}')" class="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 border border-red-500/30 hover:bg-red-500/25">
+                Liberar
+              </button>
+            </div>
+          </div>
+
+          <div class="font-bold text-white text-sm">
+            ${b.clientName} ${b.clientPhone ? `(${b.clientPhone})` : ''} — <span class="text-gray-400 font-normal">${b.vehicle}</span>
+          </div>
+          <div class="text-gray-300"><strong>Servicios:</strong> ${b.services.join(" • ")}</div>
+          ${b.notes ? `<div class="text-gray-400"><strong>Falla reportada:</strong> ${b.notes}</div>` : ''}
+
+          ${b.photo ? `
+            <div>
+              <span class="text-gray-500 block mb-1">Foto adjunta del cliente (toca para ampliar):</span>
+              <img src="${b.photo}" class="w-24 h-24 object-cover rounded-xl border border-gray-700 cursor-pointer" onclick="window.open(this.src)">
+            </div>
+          ` : ''}
+
+          ${!b.manualBlock ? `
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2.5 border-t border-gray-800">
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1">Estado del vehículo</label>
+                <select onchange="updateField('${b.id}', 'status', this.value)"
+                  class="w-full bg-dark-950 border border-gray-700 rounded-xl px-2.5 py-2 text-xs text-white">
+                  ${REPAIR_STATUSES.map(st => `<option value="${st.id}" ${(b.status || 'espera') === st.id ? 'selected' : ''}>${st.label}</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1">Costo Total (Bs.)</label>
+                <input type="text" value="${b.cost || ''}" placeholder="Ej. 250"
+                  onchange="updateField('${b.id}', 'cost', this.value)"
+                  class="w-full bg-dark-950 border border-gray-700 rounded-xl px-2.5 py-2 text-xs font-mono text-emerald-400">
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1">Diagnóstico / Nota para cliente</label>
+                <input type="text" value="${b.techNotes || ''}" placeholder="Ej. Cambio de regulador..."
+                  onchange="updateField('${b.id}', 'techNotes', this.value)"
+                  class="w-full bg-dark-950 border border-gray-700 rounded-xl px-2.5 py-2 text-xs text-gray-200">
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `).join("");
+    }
+
+    async function updateField(id, field, val) {
+      await saveBookings(allBookings.map(b => b.id === id ? { ...b, [field]: val } : b));
+    }
+
+    function sendReceiptWA(id) {
+      const b = allBookings.find(item => item.id === id);
+      if (!b) return;
+      const clean = b.clientPhone.replace(/\D/g, "");
+      const phone = clean.startsWith("591") ? clean : `591${clean}`;
+      const st = REPAIR_STATUSES.find(s => s.id === (b.status || "espera")) || REPAIR_STATUSES[0];
+
+      const msg =
+        `*TALLER ELÉCTRICO AUTOMOTRIZ MAURI* ⚡\n` +
+        `Hola *${b.clientName}*, actualización de tu vehículo:\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `*Orden:* ${b.id}\n` +
+        `*Vehículo:* ${b.vehicle} (${b.plate})\n` +
+        `*Estado actual:* ${st.label}\n` +
+        `*Trabajos:* ${b.services.join(", ")}\n` +
+        (b.techNotes ? `*Diagnóstico:* ${b.techNotes}\n` : ``) +
+        (b.cost ? `*Total servicio:* Bs. ${b.cost}\n` : ``) +
+        `━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `¡Gracias por confiar en Taller Eléctrico Mauri!`;
+
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    async function manualBlock() {
+      const d = document.getElementById("dateFilter").value || new Date().toISOString().split("T")[0];
+      const slot = document.getElementById("manualSlot").value;
+      const item = {
+        id: "BLOQ-" + Math.floor(100 + Math.random() * 900),
+        date: d, slot, blockedSlots: [slot],
+        clientName: "Bloqueado por Mauri", clientPhone: "",
+        vehicle: "Turno interno", plate: "",
+        services: ["Horario ocupado en taller"], manualBlock: true
+      };
+      await saveBookings([item, ...allBookings]);
+      renderBookings();
+    }
+
+    async function deleteBooking(id) {
+      if (!confirm("¿Liberar este horario?")) return;
+      await saveBookings(allBookings.filter(b => b.id !== id));
+      renderBookings();
+    }
+
+    function renderHistory() {
+      const q = document.getElementById("plateSearch").value.trim().toUpperCase();
+      const box = document.getElementById("historyResults");
+      const recs = allBookings.filter(b => !b.manualBlock && (!q || (b.plate && b.plate.toUpperCase().includes(q))));
+      if (recs.length === 0) {
+        box.innerHTML = `<div class="text-center py-8 text-xs text-gray-500">Sin historial para esa placa.</div>`;
+        return;
+      }
+      box.innerHTML = recs.map(r => `
+        <div class="bg-dark-900 border border-gray-800 rounded-xl p-4 text-xs space-y-1">
+          <div class="flex justify-between font-mono">
+            <span class="font-bold text-cyan-400">${r.plate || 'SIN PLACA'} — ${r.vehicle}</span>
+            <span class="text-gray-400">${r.date}</span>
+          </div>
+          <div class="text-gray-300"><strong>Trabajos:</strong> ${r.services.join(", ")}</div>
+          ${r.techNotes ? `<div class="text-gray-400"><strong>Nota:</strong> ${r.techNotes}</div>` : ''}
+          <div class="text-emerald-400 font-mono">${r.cost ? 'Cobrado: Bs. ' + r.cost : 'Sin monto'}</div>
+        </div>
+      `).join("");
+    }
+
+    function saveNewPin() {
+      const p = document.getElementById("newPinInput").value.trim();
+      if (p.length >= 4) {
+        currentPin = p;
+        localStorage.setItem(PIN_KEY, p);
+        alert("PIN actualizado.");
+      }
+    }
+  </script>
+</body>
+</html>

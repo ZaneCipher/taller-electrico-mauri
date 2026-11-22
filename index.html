@@ -18,16 +18,7 @@
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            dark: {
-              950: '#070a10',
-              900: '#0b0f19',
-              800: '#111827',
-              700: '#1f2937',
-            },
-            volt: {
-              400: '#facc15',
-              500: '#eab308',
-            }
+            dark: { 950: '#070a10', 900: '#0b0f19', 800: '#111827', 700: '#1f2937' }
           }
         }
       }
@@ -96,7 +87,7 @@
         </div>
       </div>
 
-      <!-- Navigation Tabs + Emergency + Admin -->
+      <!-- Navigation Tabs + Pedir Ubicación WA + Auxilio -->
       <div class="flex items-center gap-2 flex-wrap">
         <nav class="flex items-center bg-dark-900 p-1 rounded-xl border border-gray-800">
           <button id="nav-booking" onclick="switchView('booking')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-yellow-400 text-gray-950 flex items-center gap-1.5">
@@ -107,18 +98,14 @@
           </button>
         </nav>
 
-        <button onclick="openMapsLocation()" title="Cómo llegar al taller" class="p-2 rounded-xl bg-dark-800 hover:bg-gray-800 border border-gray-700 text-cyan-400 transition-colors">
-          <i data-lucide="map-pin" class="w-4 h-4"></i>
+        <button onclick="requestLocationWhatsApp()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-semibold transition-colors">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+          <span>Pedir ubicación por WhatsApp</span>
         </button>
 
         <button onclick="openEmergencyModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 text-xs font-bold transition-all">
           <i data-lucide="siren" class="w-4 h-4 animate-pulse"></i>
-          <span class="hidden sm:inline">Auxilio</span>
-        </button>
-
-        <button onclick="openAdminModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-dark-800 hover:bg-gray-800 border border-gray-700 text-xs font-medium text-gray-300 transition-colors">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-yellow-400"></i>
-          <span class="hidden sm:inline">Taller</span>
+          <span>Auxilio</span>
         </button>
       </div>
     </div>
@@ -137,9 +124,9 @@
             El sistema calcula automáticamente la duración estimada según el tipo de falla y bloquea el tiempo necesario en la agenda para atender tu vehículo sin cruces.
           </p>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <button onclick="openMapsLocation()" class="px-3.5 py-2 rounded-xl bg-dark-950/80 hover:bg-dark-950 border border-gray-700 text-xs font-semibold text-cyan-300 flex items-center gap-1.5 transition-all">
-            <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Ubicación GPS
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button onclick="requestLocationWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-xs font-semibold text-emerald-300 flex items-center gap-1.5 transition-all">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Pedir ubicación por WhatsApp
           </button>
           <button onclick="openEmergencyModal()" class="px-3.5 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-xs font-semibold text-red-300 flex items-center gap-1.5 transition-all">
             <i data-lucide="battery-warning" class="w-3.5 h-3.5"></i> No arranca en calle
@@ -149,7 +136,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-      <!-- Left Column: Services + Date/Time + Vehicle Details -->
+      <!-- Left Column -->
       <div class="lg:col-span-7 space-y-7">
 
         <!-- Step 1: Services -->
@@ -179,7 +166,7 @@
           <div id="servicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </section>
 
-        <!-- Step 2: Date & Anti-Collision Time Slots -->
+        <!-- Step 2: Date & Time Slots -->
         <section class="pt-5 border-t border-gray-800/80">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <div class="flex items-center gap-2.5">
@@ -225,7 +212,7 @@
             <span class="w-7 h-7 rounded-lg bg-yellow-400 text-gray-950 font-bold text-sm flex items-center justify-center">3</span>
             <div>
               <h3 class="font-bold text-base text-white">Tus datos, vehículo y foto de referencia</h3>
-              <p class="text-xs text-gray-400">La placa servirá para tu historial clínico y seguimiento en vivo</p>
+              <p class="text-xs text-gray-400">La placa servirá para tu historial y seguimiento en vivo</p>
             </div>
           </div>
 
@@ -298,7 +285,6 @@
             </div>
           </div>
 
-          <!-- Duration & Blocks Indicator -->
           <div class="rounded-xl bg-dark-950 border border-gray-800 p-3.5 space-y-2 text-xs mb-4">
             <div class="flex justify-between">
               <span class="text-gray-400">Fecha de ingreso:</span>
@@ -399,8 +385,8 @@
           <i data-lucide="message-circle" class="w-5 h-5"></i>
           <span>Enviar Comprobante al WhatsApp de Mauri</span>
         </a>
-        <button onclick="openMapsLocation()" class="w-full py-2.5 px-4 rounded-xl bg-dark-800 hover:bg-gray-800 border border-gray-700 text-cyan-300 font-semibold text-xs flex items-center justify-center gap-1.5">
-          <i data-lucide="map-pin" class="w-4 h-4"></i> Ver Ubicación del Taller en Google Maps
+        <button onclick="requestLocationWhatsApp()" class="w-full py-2.5 px-4 rounded-xl bg-dark-800 hover:bg-gray-800 border border-gray-700 text-emerald-300 font-semibold text-xs flex items-center justify-center gap-1.5">
+          <i data-lucide="map-pin" class="w-4 h-4"></i> Pedir ubicación por WhatsApp
         </button>
       </div>
     </div>
@@ -439,134 +425,29 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL PANEL ADMIN DE MAURI ==================== -->
-  <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-dark-900 border border-gray-700 rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="p-4 sm:p-5 border-b border-gray-800 flex items-center justify-between bg-dark-950">
-        <div class="flex items-center gap-2">
-          <i data-lucide="wrench" class="w-5 h-5 text-yellow-400"></i>
-          <h3 class="font-bold text-white text-base">Panel de Gestión — Taller Mauri</h3>
-        </div>
-        <button onclick="closeAdminModal()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-
-      <!-- PIN Lock -->
-      <div id="adminPinScreen" class="p-8 text-center space-y-4">
-        <div class="w-12 h-12 rounded-2xl bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 flex items-center justify-center mx-auto">
-          <i data-lucide="key-round" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-white">Acceso Exclusivo del Taller</h4>
-          <p class="text-xs text-gray-400 mt-1">Ingresa el PIN de administrador (PIN por defecto: <span class="font-mono text-yellow-400">1234</span>)</p>
-        </div>
-        <div class="max-w-xs mx-auto flex gap-2">
-          <input type="password" id="adminPinInput" maxlength="6" placeholder="PIN" onkeydown="if(event.key==='Enter') unlockAdmin()"
-            class="flex-1 bg-dark-950 border border-gray-700 rounded-xl px-4 py-2 text-center font-mono text-lg tracking-widest text-white focus:outline-none focus:border-yellow-400">
-          <button onclick="unlockAdmin()" class="px-4 py-2 rounded-xl bg-yellow-400 text-gray-950 font-bold text-sm">Entrar</button>
-        </div>
-        <p id="pinError" class="hidden text-xs text-red-400">PIN incorrecto.</p>
-      </div>
-
-      <!-- Admin Content -->
-      <div id="adminDashboard" class="hidden flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
-        <!-- Admin Sub-tabs -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800 pb-3">
-          <div class="flex gap-2">
-            <button id="adminTab-agenda" onclick="switchAdminTab('agenda')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-400 text-gray-950">Agenda & Estados</button>
-            <button id="adminTab-history" onclick="switchAdminTab('history')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700">Historial por Placa</button>
-            <button id="adminTab-settings" onclick="switchAdminTab('settings')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700">Configurar Taller</button>
-          </div>
-          <span id="adminTotalCount" class="text-xs font-mono text-gray-400">0 registros</span>
-        </div>
-
-        <!-- SUB-TAB 1: AGENDA & ESTADOS -->
-        <div id="adminPane-agenda" class="space-y-4">
-          <div class="bg-dark-950 border border-gray-800 rounded-xl p-3.5 flex flex-wrap items-end gap-3">
-            <div>
-              <label class="block text-[11px] text-gray-400 mb-1">Filtrar fecha</label>
-              <input type="date" id="adminDateFilter" onchange="renderAdminBookings()"
-                class="bg-dark-800 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white">
-            </div>
-            <div>
-              <label class="block text-[11px] text-gray-400 mb-1">Bloquear horario manual</label>
-              <select id="adminBlockSlot" class="bg-dark-800 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white">
-                <option value="08:00">08:00</option>
-                <option value="09:30">09:30</option>
-                <option value="11:00">11:00</option>
-                <option value="14:00">14:00</option>
-                <option value="15:30">15:30</option>
-                <option value="17:00">17:00</option>
-              </select>
-            </div>
-            <button onclick="adminManualBlock()" class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-semibold">
-              + Bloquear Turno
-            </button>
-            <button onclick="document.getElementById('adminDateFilter').value=''; renderAdminBookings();" class="px-3 py-1.5 rounded-lg bg-dark-800 text-gray-400 hover:text-white text-xs">
-              Ver Todas
-            </button>
-          </div>
-
-          <div id="adminBookingsList" class="space-y-3"></div>
-        </div>
-
-        <!-- SUB-TAB 2: HISTORIAL CLÍNICO POR PLACA -->
-        <div id="adminPane-history" class="hidden space-y-4">
-          <div class="flex gap-2">
-            <input type="text" id="adminPlateSearch" placeholder="Buscar placa (ej. 4582-XYZ)..." oninput="renderPlateHistory()"
-              class="flex-1 bg-dark-950 border border-gray-700 rounded-xl px-4 py-2.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-yellow-400">
-          </div>
-          <div id="plateHistoryResults" class="space-y-3"></div>
-        </div>
-
-        <!-- SUB-TAB 3: CONFIGURACIÓN DEL TALLER -->
-        <div id="adminPane-settings" class="hidden space-y-4">
-          <div class="bg-dark-950 border border-gray-800 rounded-xl p-4 space-y-4">
-            <div>
-              <label class="block text-xs font-bold text-gray-300 mb-1">Enlace de Google Maps del Taller</label>
-              <p class="text-[11px] text-gray-500 mb-2">Pega aquí el enlace de compartir ubicación de Google Maps para que los clientes lleguen directo.</p>
-              <input type="url" id="settingMapsUrl" placeholder="https://maps.google.com/?q=..."
-                class="w-full bg-dark-900 border border-gray-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-300 mb-1">Cambiar PIN de Administrador</label>
-              <input type="text" id="settingNewPin" maxlength="6" placeholder="Nuevo PIN (4 a 6 dígitos)"
-                class="w-48 bg-dark-900 border border-gray-700 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-yellow-400">
-            </div>
-            <button onclick="saveWorkshopSettings()" class="px-4 py-2.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-gray-950 font-bold text-xs">
-              Guardar Configuración
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Footer -->
   <footer class="border-t border-gray-800/80 bg-dark-950 py-5 mt-12">
     <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
       <p>© 2026 Taller Eléctrico Automotriz Mauri • Atención Lun–Sáb 08:00 a 18:30</p>
-      <a href="https://wa.me/59164628228" target="_blank" class="text-gray-400 hover:text-yellow-400 flex items-center gap-1.5">
-        <i data-lucide="phone" class="w-3.5 h-3.5"></i> WhatsApp Directo: +591 64628228
-      </a>
+      <button onclick="requestLocationWhatsApp()" class="text-emerald-400 hover:underline flex items-center gap-1.5">
+        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Pedir ubicación por WhatsApp (+591 64628228)
+      </button>
     </div>
   </footer>
 
   <script>
-    // ==================== CONFIGURACIÓN & CATÁLOGO ====================
     const MAURI_PHONE = "59164628228";
     const CLOUD_API_URL = "https://jsonblob.com/api/jsonBlob/0193307c-8e4a-7f8a-9c2d-84a91f0b2e11";
     const LOCAL_DB_KEY = "mauri_workshop_bookings_v2";
     const MY_TICKETS_KEY = "mauri_my_tickets_v2";
-    const SETTINGS_KEY = "mauri_workshop_settings_v2";
 
-    // Cada bloque equivale a 1.5 horas (90 min)
     const TIME_SLOTS = [
-      { id: "08:00", label: "08:00 AM", sub: "1er Turno" },
-      { id: "09:30", label: "09:30 AM", sub: "Mañana" },
-      { id: "11:00", label: "11:00 AM", sub: "Media Mañana" },
-      { id: "14:00", label: "02:00 PM", sub: "Tarde" },
-      { id: "15:30", label: "03:30 PM", sub: "Media Tarde" },
-      { id: "17:00", label: "05:00 PM", sub: "Último Turno" }
+      { id: "08:00", label: "08:00 AM" },
+      { id: "09:30", label: "09:30 AM" },
+      { id: "11:00", label: "11:00 AM" },
+      { id: "14:00", label: "02:00 PM" },
+      { id: "15:30", label: "03:30 PM" },
+      { id: "17:00", label: "05:00 PM" }
     ];
 
     const REPAIR_STATUSES = [
@@ -577,7 +458,6 @@
       { id: "listo", label: "¡Listo para recoger!", color: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40", step: 4 }
     ];
 
-    // blocks = cantidad de franjas horarias que consume el servicio
     const SERVICES = [
       { id: 1, name: "Mantenimiento y reparación de motor de arranque", category: "arranque", icon: "cog", blocks: 2, duration: "2–3 hrs", desc: "Bendix, carbones, solenoide, embobinado y pruebas en banco." },
       { id: 2, name: "Mantenimiento y reparación de alternador", category: "arranque", icon: "battery-charging", blocks: 2, duration: "2–3 hrs", desc: "Regulador de voltaje, placa de diodos, rodamientos y carga." },
@@ -603,14 +483,7 @@
     let currentFaultPhotoBase64 = "";
     let userGpsCoords = null;
 
-    let workshopSettings = {
-      pin: "1234",
-      mapsUrl: "https://www.google.com/maps/search/?api=1&query=Taller+Electrico+Automotriz+Cochabamba+Bolivia"
-    };
-
-    // ==================== INICIALIZACIÓN ====================
     document.addEventListener("DOMContentLoaded", async () => {
-      loadSettings();
       initDatePicker();
       renderServices();
       renderMySavedTickets();
@@ -643,9 +516,9 @@
       lucide.createIcons();
     });
 
-    function loadSettings() {
-      const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
-      if (saved) workshopSettings = { ...workshopSettings, ...saved };
+    function requestLocationWhatsApp() {
+      const msg = "Hola Mauri, por favor ¿me podrías enviar la ubicación del taller para llegar? 📍";
+      window.open(`https://wa.me/${MAURI_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
     }
 
     function switchView(viewName) {
@@ -668,7 +541,6 @@
       lucide.createIcons();
     }
 
-    // ==================== CÁLCULO DE BLOQUES POR DURACIÓN ====================
     function getRequiredBlocks() {
       if (selectedServices.size === 0) return 1;
       let maxBlocks = 1;
@@ -676,7 +548,6 @@
         const srv = SERVICES.find(s => s.id === id);
         if (srv && srv.blocks > maxBlocks) maxBlocks = srv.blocks;
       });
-      // Si selecciona 3 o más servicios distintos, sumar 1 bloque extra (máx 3)
       if (selectedServices.size >= 3 && maxBlocks < 3) maxBlocks += 1;
       return Math.min(maxBlocks, 3);
     }
@@ -686,14 +557,11 @@
       if (startIndex === -1) return [];
       const result = [];
       for (let i = 0; i < blockCount; i++) {
-        if (startIndex + i < TIME_SLOTS.length) {
-          result.push(TIME_SLOTS[startIndex + i].id);
-        }
+        if (startIndex + i < TIME_SLOTS.length) result.push(TIME_SLOTS[startIndex + i].id);
       }
       return result;
     }
 
-    // ==================== SINCRONIZACIÓN DE RESERVAS ====================
     async function fetchBookings() {
       const syncEl = document.getElementById("syncStatus");
       try {
@@ -724,15 +592,11 @@
       } catch (e) {}
     }
 
-    // ==================== FECHA Y FRANJAS HORARIAS ====================
     function initDatePicker() {
       const dateInput = document.getElementById("bookingDate");
       const now = new Date();
       if (now.getDay() === 0) now.setDate(now.getDate() + 1);
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const todayStr = `${yyyy}-${mm}-${dd}`;
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       dateInput.min = todayStr;
       dateInput.value = todayStr;
     }
@@ -748,9 +612,7 @@
       const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       if (dateStr !== todayStr) return false;
       const [h, m] = slotTime.split(":").map(Number);
-      const slotMinutes = h * 60 + m;
-      const nowMinutes = now.getHours() * 60 + now.getMinutes();
-      return slotMinutes <= nowMinutes + 15;
+      return (h * 60 + m) <= (now.getHours() * 60 + now.getMinutes() + 15);
     }
 
     function getOccupiedSlotsForDate(dateStr) {
@@ -785,7 +647,7 @@
       const occupiedSet = getOccupiedSlotsForDate(dateStr);
       const previewBlocks = selectedSlot ? getConsecutiveSlotIds(selectedSlot, reqBlocks) : [];
 
-      grid.innerHTML = TIME_SLOTS.map((slot, idx) => {
+      grid.innerHTML = TIME_SLOTS.map(slot => {
         const isDirectOccupied = occupiedSet.has(slot.id);
         const isPast = isSlotPastToday(dateStr, slot.id);
         const neededSlots = getConsecutiveSlotIds(slot.id, reqBlocks);
@@ -799,22 +661,11 @@
         let badgeText = "Disponible";
         let extraClass = "bg-dark-950 border-gray-700 text-gray-200 hover:border-yellow-400";
 
-        if (isDirectOccupied) {
-          badgeText = "Ocupado";
-          extraClass = "occupied";
-        } else if (isPast) {
-          badgeText = "Pasado";
-          extraClass = "occupied";
-        } else if (!hasEnoughRemaining || collidesAhead) {
-          badgeText = `Req. ${reqBlocks} bloq.`;
-          extraClass = "insufficient";
-        } else if (isPrimarySelected) {
-          badgeText = "Inicio turno";
-          extraClass = "selected";
-        } else if (isPartOfPreview) {
-          badgeText = "Bloqueado";
-          extraClass = "multi-preview";
-        }
+        if (isDirectOccupied) { badgeText = "Ocupado"; extraClass = "occupied"; }
+        else if (isPast) { badgeText = "Pasado"; extraClass = "occupied"; }
+        else if (!hasEnoughRemaining || collidesAhead) { badgeText = `Req. ${reqBlocks} bloq.`; extraClass = "insufficient"; }
+        else if (isPrimarySelected) { badgeText = "Inicio turno"; extraClass = "selected"; }
+        else if (isPartOfPreview) { badgeText = "Bloqueado"; extraClass = "multi-preview"; }
 
         return `
           <button type="button" ${disabled ? "disabled" : ""} onclick="selectTimeSlot('${slot.id}')"
@@ -827,7 +678,6 @@
           </button>
         `;
       }).join("");
-
       lucide.createIcons();
     }
 
@@ -837,7 +687,6 @@
       updateSummary();
     }
 
-    // ==================== SERVICIOS ====================
     function renderServices() {
       const grid = document.getElementById("servicesGrid");
       const query = document.getElementById("serviceSearch").value.toLowerCase().trim();
@@ -871,7 +720,6 @@
           </div>
         `;
       }).join("");
-
       lucide.createIcons();
     }
 
@@ -879,14 +727,11 @@
       if (selectedServices.has(id)) selectedServices.delete(id);
       else selectedServices.add(id);
 
-      // Verificar si la hora ya seleccionada sigue teniendo bloques suficientes
       if (selectedSlot) {
         const dateStr = document.getElementById("bookingDate").value;
         const occupiedSet = getOccupiedSlotsForDate(dateStr);
         const needed = getConsecutiveSlotIds(selectedSlot, getRequiredBlocks());
-        if (needed.length < getRequiredBlocks() || needed.some(s => occupiedSet.has(s))) {
-          selectedSlot = null;
-        }
+        if (needed.length < getRequiredBlocks() || needed.some(s => occupiedSet.has(s))) selectedSlot = null;
       }
 
       renderServices();
@@ -894,7 +739,6 @@
       updateSummary();
     }
 
-    // ==================== FOTO DE FALLA ====================
     function handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -903,12 +747,10 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxW = 480;
-          const scale = Math.min(1, maxW / img.width);
+          const scale = Math.min(1, 480 / img.width);
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
           currentFaultPhotoBase64 = canvas.toDataURL("image/jpeg", 0.65);
 
           document.getElementById("photoPreviewImg").src = currentFaultPhotoBase64;
@@ -927,7 +769,6 @@
       document.getElementById("photoPreviewWrap").classList.remove("flex");
     }
 
-    // ==================== RESUMEN ====================
     function updateSummary() {
       const count = selectedServices.size;
       const reqBlocks = getRequiredBlocks();
@@ -966,10 +807,8 @@
       lucide.createIcons();
     }
 
-    // ==================== CONFIRMAR Y BLOQUEAR CITA ====================
     async function confirmBooking() {
       const errorBox = document.getElementById("formError");
-      const errorText = document.getElementById("formErrorText");
       errorBox.classList.add("hidden");
 
       const dateStr = document.getElementById("bookingDate").value;
@@ -1049,7 +888,6 @@
       document.getElementById("formError").classList.remove("hidden");
     }
 
-    // ==================== COMPROBANTE, CALENDAR Y WHATSAPP ====================
     function buildWhatsAppMessage(b) {
       const servicesText = b.services.map(s => `• ${s}`).join("\n");
       return (
@@ -1124,8 +962,7 @@
       const end = `${y}${m}${d}T${endHour}${mm}00`;
       const title = encodeURIComponent(`Cita Taller Eléctrico Mauri (${b.plate})`);
       const details = encodeURIComponent(`Ticket: ${b.id}\nServicios: ${b.services.join(", ")}\nWhatsApp Mauri: +591 64628228`);
-      const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}`;
-      window.open(calUrl, "_blank");
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}`, "_blank");
     }
 
     function renderMySavedTickets() {
@@ -1151,7 +988,6 @@
       searchVehicleStatus();
     }
 
-    // ==================== RASTREO DE ESTADO EN VIVO ====================
     async function searchVehicleStatus() {
       const query = document.getElementById("trackQueryInput").value.trim().toUpperCase();
       const container = document.getElementById("trackResultContainer");
@@ -1185,7 +1021,6 @@
               <span class="px-3 py-1 rounded-full text-xs font-bold ${st.color}">${st.label}</span>
             </div>
 
-            <!-- Progress bar -->
             <div class="grid grid-cols-4 gap-1.5">
               ${[1, 2, 3, 4].map(stepNum => `
                 <div class="h-2 rounded-full ${st.step >= stepNum ? 'bg-yellow-400' : 'bg-gray-800'}"></div>
@@ -1229,11 +1064,6 @@
       lucide.createIcons();
     }
 
-    // ==================== GPS TALLER & EMERGENCIA ====================
-    function openMapsLocation() {
-      window.open(workshopSettings.mapsUrl, "_blank");
-    }
-
     function openEmergencyModal() {
       document.getElementById("emergencyModal").classList.remove("hidden");
       lucide.createIcons();
@@ -1275,200 +1105,6 @@
         `*Ubicación GPS:* ${gpsLink}`;
 
       window.open(`https://wa.me/${MAURI_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
-    }
-
-    // ==================== PANEL ADMIN DE MAURI ====================
-    function openAdminModal() {
-      document.getElementById("adminModal").classList.remove("hidden");
-      document.getElementById("adminPinInput").value = "";
-      document.getElementById("pinError").classList.add("hidden");
-      lucide.createIcons();
-    }
-
-    function closeAdminModal() {
-      document.getElementById("adminModal").classList.add("hidden");
-    }
-
-    async function unlockAdmin() {
-      const pin = document.getElementById("adminPinInput").value;
-      if (pin === workshopSettings.pin) {
-        document.getElementById("adminPinScreen").classList.add("hidden");
-        document.getElementById("adminDashboard").classList.remove("hidden");
-        document.getElementById("settingMapsUrl").value = workshopSettings.mapsUrl;
-        await fetchBookings();
-        renderAdminBookings();
-      } else {
-        document.getElementById("pinError").classList.remove("hidden");
-      }
-    }
-
-    function switchAdminTab(tab) {
-      ["agenda", "history", "settings"].forEach(t => {
-        document.getElementById(`adminPane-${t}`).classList.toggle("hidden", t !== tab);
-        document.getElementById(`adminTab-${t}`).className = t === tab
-          ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-400 text-gray-950"
-          : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-dark-800 text-gray-300 border border-gray-700";
-      });
-      if (tab === "history") renderPlateHistory();
-    }
-
-    function renderAdminBookings() {
-      const filterDate = document.getElementById("adminDateFilter").value;
-      const list = document.getElementById("adminBookingsList");
-      const filtered = filterDate ? allBookings.filter(b => b.date === filterDate) : allBookings;
-      document.getElementById("adminTotalCount").textContent = `${filtered.length} citas`;
-
-      if (filtered.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-xs text-gray-500">No hay reservas registradas para este filtro.</div>`;
-        return;
-      }
-
-      list.innerHTML = filtered.map(b => `
-        <div class="bg-dark-950 border border-gray-800 rounded-xl p-4 text-xs space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <span class="font-mono font-bold text-yellow-400">${b.date} • ${b.slot}</span>
-              <span class="ml-2 px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-mono">${b.id}</span>
-              ${b.plate ? `<span class="ml-1.5 px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono">${b.plate}</span>` : ''}
-            </div>
-            <div class="flex items-center gap-2">
-              ${!b.manualBlock ? `
-                <button onclick="sendDigitalReceiptToClient('${b.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 font-semibold">
-                  Enviar Recibo WA
-                </button>
-              ` : ''}
-              <button onclick="deleteBooking('${b.id}')" class="px-2.5 py-1 rounded-lg bg-red-500/15 text-red-400 border border-red-500/30 hover:bg-red-500/25">
-                Liberar
-              </button>
-            </div>
-          </div>
-
-          <div class="font-semibold text-white text-sm">
-            ${b.clientName} ${b.clientPhone ? `(${b.clientPhone})` : ''} — <span class="text-gray-400 font-normal">${b.vehicle}</span>
-          </div>
-          <div class="text-gray-400">Trabajos: ${b.services.join(" • ")}</div>
-
-          ${b.photo ? `
-            <div>
-              <span class="text-gray-500 block mb-1">Foto adjunta del cliente:</span>
-              <img src="${b.photo}" class="w-24 h-24 object-cover rounded-lg border border-gray-700 cursor-pointer" onclick="window.open(this.src)">
-            </div>
-          ` : ''}
-
-          ${!b.manualBlock ? `
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-gray-800/80">
-              <div>
-                <label class="block text-[10px] text-gray-500 mb-1">Estado del auto</label>
-                <select onchange="updateBookingField('${b.id}', 'status', this.value)"
-                  class="w-full bg-dark-900 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs text-white">
-                  ${REPAIR_STATUSES.map(st => `<option value="${st.id}" ${(b.status || 'espera') === st.id ? 'selected' : ''}>${st.label}</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-500 mb-1">Costo Total (Bs.)</label>
-                <input type="text" value="${b.cost || ''}" placeholder="Ej. 250"
-                  onchange="updateBookingField('${b.id}', 'cost', this.value)"
-                  class="w-full bg-dark-900 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-emerald-400">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-500 mb-1">Nota técnica para el cliente</label>
-                <input type="text" value="${b.techNotes || ''}" placeholder="Ej. Se cambió regulador..."
-                  onchange="updateBookingField('${b.id}', 'techNotes', this.value)"
-                  class="w-full bg-dark-900 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200">
-              </div>
-            </div>
-          ` : ''}
-        </div>
-      `).join("");
-    }
-
-    async function updateBookingField(id, field, value) {
-      const updated = allBookings.map(b => b.id === id ? { ...b, [field]: value } : b);
-      await saveBookingsToCloud(updated);
-    }
-
-    function sendDigitalReceiptToClient(id) {
-      const b = allBookings.find(item => item.id === id);
-      if (!b) return;
-      const cleanPhone = b.clientPhone.replace(/\D/g, "");
-      const phoneWithPrefix = cleanPhone.startsWith("591") ? cleanPhone : `591${cleanPhone}`;
-      const st = REPAIR_STATUSES.find(s => s.id === (b.status || "espera")) || REPAIR_STATUSES[0];
-
-      const msg =
-        `*TALLER ELÉCTRICO AUTOMOTRIZ MAURI* ⚡\n` +
-        `Hola *${b.clientName}*, actualización de tu vehículo:\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `*Orden:* ${b.id}\n` +
-        `*Vehículo:* ${b.vehicle} (${b.plate})\n` +
-        `*Estado actual:* ${st.label}\n` +
-        `*Trabajos:* ${b.services.join(", ")}\n` +
-        (b.techNotes ? `*Diagnóstico:* ${b.techNotes}\n` : ``) +
-        (b.cost ? `*Total servicio:* Bs. ${b.cost}\n` : ``) +
-        `━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `¡Gracias por confiar en Taller Eléctrico Mauri!`;
-
-      window.open(`https://wa.me/${phoneWithPrefix}?text=${encodeURIComponent(msg)}`, "_blank");
-    }
-
-    async function adminManualBlock() {
-      const dateStr = document.getElementById("adminDateFilter").value || document.getElementById("bookingDate").value;
-      const slot = document.getElementById("adminBlockSlot").value;
-      if (!dateStr) return alert("Selecciona una fecha.");
-
-      const manual = {
-        id: "BLOQ-" + Math.floor(100 + Math.random() * 900),
-        date: dateStr,
-        slot,
-        blockedSlots: [slot],
-        clientName: "Horario bloqueado por Mauri",
-        clientPhone: "",
-        vehicle: "Atención directa en taller",
-        plate: "",
-        services: ["Turno reservado internamente"],
-        manualBlock: true
-      };
-      await saveBookingsToCloud([manual, ...allBookings]);
-      renderAdminBookings();
-      renderTimeSlots();
-    }
-
-    async function deleteBooking(id) {
-      if (!confirm("¿Liberar este horario para que vuelva a estar disponible?")) return;
-      await saveBookingsToCloud(allBookings.filter(b => b.id !== id));
-      renderAdminBookings();
-      renderTimeSlots();
-    }
-
-    function renderPlateHistory() {
-      const q = document.getElementById("adminPlateSearch").value.trim().toUpperCase();
-      const box = document.getElementById("plateHistoryResults");
-      const records = allBookings.filter(b => !b.manualBlock && (!q || (b.plate && b.plate.toUpperCase().includes(q))));
-
-      if (records.length === 0) {
-        box.innerHTML = `<div class="text-center py-6 text-xs text-gray-500">Sin historial encontrado para esa placa.</div>`;
-        return;
-      }
-
-      box.innerHTML = records.map(r => `
-        <div class="bg-dark-950 border border-gray-800 rounded-xl p-3.5 text-xs space-y-1.5">
-          <div class="flex justify-between">
-            <span class="font-mono font-bold text-cyan-400">${r.plate || 'SIN PLACA'} — ${r.vehicle}</span>
-            <span class="text-gray-400">${r.date}</span>
-          </div>
-          <div class="text-gray-300"><strong>Trabajos:</strong> ${r.services.join(", ")}</div>
-          ${r.techNotes ? `<div class="text-gray-400"><strong>Nota técnica:</strong> ${r.techNotes}</div>` : ''}
-          <div class="text-emerald-400 font-mono">${r.cost ? 'Cobrado: Bs. ' + r.cost : 'Sin monto registrado'}</div>
-        </div>
-      `).join("");
-    }
-
-    function saveWorkshopSettings() {
-      const url = document.getElementById("settingMapsUrl").value.trim();
-      const newPin = document.getElementById("settingNewPin").value.trim();
-      if (url) workshopSettings.mapsUrl = url;
-      if (newPin && newPin.length >= 4) workshopSettings.pin = newPin;
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(workshopSettings));
-      alert("Configuración guardada correctamente.");
     }
   </script>
 </body>
